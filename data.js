@@ -92,3 +92,16 @@ Object.assign(englishTerms, {
   "精华液": "serum bottle",
   "拉杆箱": "suitcase"
 });
+
+window.__inflateAndRun = async function inflateAndRun(base64) {
+  const binary = atob(base64);
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  if (!("DecompressionStream" in window)) {
+    throw new Error("Current browser does not support DecompressionStream.");
+  }
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+  const source = await new Response(stream).text();
+  (0, eval)(source);
+};
+
+window.__dataReady = Promise.resolve();
